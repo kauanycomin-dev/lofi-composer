@@ -5,38 +5,50 @@ from exportador import exportar_midi
 from persistencia import Composicao, salvar_composicao
 
 def main():
-    # 1. Configurações da Composição
     tom = "C"
-    graus = [1, 6, 2, 5]  # Progressão I-vi-ii-V clássica da Bossa Nova
     bpm = 110
 
-    print(f"--- Gerando composição no tom de {tom} maior ---")
-    
-    # 2. Lógica Teórica em Python puro
+    # Definição da Estrutura Musical (Bossa Nova Típica)
+    # Cada número representa um grau da escala maior
+    secoes = {
+        "Intro": [1, 1, 1, 1],                      # 4 compassos (I)
+        "Parte A": [1, 6, 2, 5] * 4,                 # 16 compassos (I - vi - ii - V)
+        "Parte B": [4, 4, 1, 1, 2, 5, 1, 5] * 2,     # 16 compassos (IV - I - ii - V)
+        "Outro": [1, 6, 2, 5] * 3                   # 12 compassos (I - vi - ii - V)
+    }
+
+    # Junta todas as seções em uma lista única de graus (Total: 48 compassos)
+    graus_completos = []
+    for nome_secao, graus in secoes.items():
+        graus_completos.extend(graus)
+
+    # Duração calculada: 48 compassos * ~2.18s por compasso ≈ 1m44s
+    print(f"--- Gerando Bossa Nova Completa (~1m44s) no tom de {tom} ---")
+    print(f"Total de compassos: {len(graus_completos)}")
+
+    # 2. Execução do Pipeline Musical
     escala = gerar_escala_maior(tom)
-    print(f"Escala Maior ({tom}): {escala}")
-    
-    progressao = gerar_progressao(escala, graus, tamanho=4)
-    print("\nProgressão de Acordes (com 7ª):")
-    for g, ac in zip(graus, progressao):
-        print(f" Grau {g}: {ac}")
-        
+    progressao = gerar_progressao(escala, graus_completos, tamanho=4)
     melodia = gerar_melodia(escala, progressao, notas_por_compasso=4)
-    print(f"\nMelodia Gerada ({len(melodia)} notas): {melodia}")
-    
-    # 3. Persistência
+
+    # 3. Persistência dos Dados
     comp = Composicao(
         tom=tom,
         escala=escala,
-        graus=graus,
+        graus=graus_completos,
         progressao=progressao,
         melodia=melodia,
         bpm=bpm
     )
-    salvar_composicao(comp)
-    
-    # 4. Exportação MIDI (Único ponto de contato com music21)
-    exportar_midi(progressao, melodia, nome_arquivo="bossa_nova_demo.mid", bpm=bpm)
+    salvar_composicao(comp, "bossa_nova_completa.json")
+
+    # 4. Exportação MIDI
+    exportar_midi(
+        progressao=progressao,
+        melodia=melodia,
+        nome_arquivo="bossa_nova_completa.mid",
+        bpm=bpm
+    )
 
 if __name__ == "__main__":
     main()
