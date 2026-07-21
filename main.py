@@ -26,12 +26,12 @@ def main():
     print(f"--- Gerando Bossa Nova Completa (~1m44s) no tom de {tom} ---")
     print(f"Total de compassos: {len(graus_completos)}")
 
-    # 2. Execução do Pipeline Musical
+    # Execução do Pipeline Musical
     escala = gerar_escala_maior(tom)
     progressao = gerar_progressao(escala, graus_completos, tamanho=4)
     melodia = gerar_melodia(escala, progressao, notas_por_compasso=4)
 
-    # 3. Persistência dos Dados
+    # Persistência dos Dados
     comp = Composicao(
         tom=tom,
         escala=escala,
@@ -42,7 +42,7 @@ def main():
     )
     salvar_composicao(comp, "bossa_nova_completa.json")
 
-    # 4. Exportação MIDI
+    # Exportação MIDI
     exportar_midi(
         progressao=progressao,
         melodia=melodia,
